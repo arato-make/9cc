@@ -50,6 +50,9 @@ assert 3 'a=3;'
 assert 10 'z=2*5;'
 assert 13 'z=2*5;a=3;c=a+z;'
 assert 13 'foo=2*5;bar=3;foobar=foo+bar;'
-
+assert 13 'return 13;'
+assert 3 'foo=2*5;bar=3;return bar;foobar=foo+bar;'
+assert 13 'foo=2*5;bar=3;return foo+bar;'
+assert 23 'return 3+5*4;'
 
 echo OK

@@ -22,6 +22,13 @@ Node *new_node_ident(int offset) {
     return node;
 }
 
+Node *new_node_return() {
+    Node *node = calloc(1,sizeof(Node));
+    node->kind = ND_RETURN;
+    token = token->next;
+    node->lhs = expr();
+    return node;
+}
 
 bool consume(char *op) {
     if (token->kind != TK_RESERVED || 
@@ -74,6 +81,10 @@ bool at_ident() {
     return token->kind == TK_IDENT;
 }
 
+bool at_return() {
+    return token->kind == TK_RETURN;
+}
+
 LVar *find_lvar(Token *tok) {
     for (LVar *var = locals; var; var = var->next)
         if(var->len == tok->len && !memcmp(tok->str, var->name, var->len))
@@ -91,8 +102,18 @@ Node *program() {
 }
 
 Node *stmt() {
-    Node *node = expr();
-    expect(";");
+    Node *node;
+
+    if (at_return()) {
+        node = new_node_return();
+    } else {
+        node = expr();
+    }
+
+    if (!consume(";")) {
+        error_at(token->str, "';'ではないトークンです");
+    }
+
     return node;
 }
 

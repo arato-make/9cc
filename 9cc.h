@@ -10,6 +10,7 @@ typedef enum {
     TK_IDENT,
     TK_NUM,
     TK_EOF,
+    TK_RETURN,
 } TokenKind;
 
 typedef enum {
@@ -24,6 +25,7 @@ typedef enum {
     ND_LTE,
     ND_ASSIGN,
     ND_LVAR,
+    ND_RETURN,
 } NodeKind;
 
 typedef struct Token Token;
