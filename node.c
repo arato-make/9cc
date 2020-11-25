@@ -22,8 +22,69 @@ Node *new_node_ident(int offset) {
     return node;
 }
 
+
+bool consume(char *op) {
+    if (token->kind != TK_RESERVED || 
+        strlen(op) != token->len ||
+        memcmp(token->str, op, token->len))
+        return false;
+    token = token->next;
+    return true;
+}
+
+void expect(char *op) {
+    if(token->kind != TK_RESERVED || 
+        strlen(op) != token->len ||
+        memcmp(token->str, op, token->len))
+        error_at(token->str, "'%c'ではありません", op);
+    token = token->next;
+}
+
+int expect_number() {
+    if (token->kind != TK_NUM)
+        error_at(token->str, "数ではありません");
+    int val = token->val;
+    token = token->next;
+    return val;
+}
+
+int get_offset() {
+    LVar *lvar = find_lvar(token);
+    int offset;
+    if (lvar) {
+        offset = lvar->offset;
+    } else {
+        lvar = calloc(1, sizeof(LVar));
+        lvar->next = locals;
+        lvar->name = token->str;
+        lvar->len = token->len;
+        lvar->offset = locals->offset + 8;
+        offset = lvar->offset;
+        locals = lvar;
+    }
+    token = token->next;
+    return offset;
+}
+
+bool at_eof() {
+    return token->kind == TK_EOF;
+}
+
+bool at_ident() {
+    return token->kind == TK_IDENT;
+}
+
+LVar *find_lvar(Token *tok) {
+    for (LVar *var = locals; var; var = var->next)
+        if(var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+            return var;
+    return NULL;
+}
+
 Node *program() {
     int i = 0;
+    locals = calloc(1, sizeof(LVar));
+    locals->offset = 0;
     while (!at_eof())
         code[i++] = stmt();
     code[i] = NULL;

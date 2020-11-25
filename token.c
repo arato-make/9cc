@@ -1,6 +1,5 @@
 #include "9cc.h"
 
-
 Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     Token *tok = calloc(1, sizeof(Token));
     tok->kind = kind;
@@ -9,45 +8,6 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     tok->len = len;
     cur->next = tok;
     return tok;
-}
-
-bool consume(char *op) {
-    if (token->kind != TK_RESERVED || 
-        strlen(op) != token->len ||
-        memcmp(token->str, op, token->len))
-        return false;
-    token = token->next;
-    return true;
-}
-
-void expect(char *op) {
-    if(token->kind != TK_RESERVED || 
-        strlen(op) != token->len ||
-        memcmp(token->str, op, token->len))
-        error_at(token->str, "'%c'ではありません", op);
-    token = token->next;
-}
-
-int expect_number() {
-    if (token->kind != TK_NUM)
-        error_at(token->str, "数ではありません");
-    int val = token->val;
-    token = token->next;
-    return val;
-}
-
-int get_offset() {
-    int offset = (token->str[0] - 'a' + 1) * 8;
-    token = token->next;
-    return offset;
-}
-
-bool at_eof() {
-    return token->kind == TK_EOF;
-}
-
-bool at_ident() {
-    return token->kind == TK_IDENT;
 }
 
 Token *tokenize() {
@@ -83,7 +43,16 @@ Token *tokenize() {
         }
 
         if('a' <= *p && *p <= 'z') {
-            cur = new_token(TK_IDENT, cur, p++, 1);
+            int i = 0;
+            while ('a' <= *p && *p <= 'z') {
+                i++;
+                p++;
+            }
+            p -= i;
+
+            cur = new_token(TK_IDENT, cur, p, i);
+
+            p += i;
             continue;
         }
 

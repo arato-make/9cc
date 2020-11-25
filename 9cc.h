@@ -44,7 +44,15 @@ struct Node {
     int offset;
 };
 
+typedef struct LVar LVar;
+struct LVar {
+    LVar *next;
+    char *name;
+    int len;
+    int offset;
+};
 
+LVar *locals;
 Token * token;
 char *user_input;
 Node *code[100];
@@ -57,6 +65,7 @@ bool at_eof();
 bool at_ident();
 Token *tokenize();
 
+LVar *find_lvar(Token *tok);
 Node *program();
 Node *stmt();
 Node *expr();

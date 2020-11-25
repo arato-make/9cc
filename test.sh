@@ -49,6 +49,7 @@ assert 1 '100-50*2 == 10*3-15*2;'
 assert 3 'a=3;'
 assert 10 'z=2*5;'
 assert 13 'z=2*5;a=3;c=a+z;'
+assert 13 'foo=2*5;bar=3;foobar=foo+bar;'
 
 
 echo OK
