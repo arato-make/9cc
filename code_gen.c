@@ -80,6 +80,10 @@ void gen(Node *node) {
         printf("  jmp .Lbegin000\n");
         printf(".Lend000:\n");
         return;
+    case ND_BLOCK:
+        gen(node->lhs);
+        gen(node->rhs);
+        return;
     }
 
     gen(node->lhs);

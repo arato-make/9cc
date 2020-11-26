@@ -31,6 +31,14 @@ bool consume(char *op) {
     return true;
 }
 
+bool check(char *op) {
+    if (token->kind != TK_RESERVED || 
+        strlen(op) != token->len ||
+        memcmp(token->str, op, token->len))
+        return false;
+    return true;
+}
+
 void expect(char *op) {
     if(token->kind != TK_RESERVED || 
         strlen(op) != token->len ||
@@ -107,10 +115,18 @@ Node *stmt() {
             if (!consume(")"))
                 error_at(token->str, "')'ではないトークンです");
             
-            node = stmt();
+           
+            if (consume("{"))
+                node = block();
+            else
+                node = stmt();
+            
 
             if (consume("else")) {
-                node = new_node(ND_ELSE, node, stmt());
+                if (consume("{"))
+                    node = new_node(ND_ELSE, node, block());
+                else
+                    node = new_node(ND_ELSE, node, stmt());
             }
 
             node = new_node(ND_IF, condition_node, node);
@@ -123,8 +139,11 @@ Node *stmt() {
             node = expr();
             if (!consume(")"))
                 error_at(token->str, "')'ではないトークンです");
-            
-            node = new_node(ND_WHILE, node, stmt());
+
+            if (consume("{"))
+                node = new_node(ND_WHILE, node, block());
+            else
+                node = new_node(ND_WHILE, node, stmt());
             return node;
         } else {
             error_at(token->str, "'('ではないトークンです");
@@ -146,7 +165,11 @@ Node *stmt() {
             if (!consume(")"))
                 error_at(token->str, "')'ではないトークンです");
 
-            node = new_node(ND_FOR, stmt(), final_node);
+            if (consume("{"))
+                node = new_node(ND_FOR, block(), final_node);
+            else
+                node = new_node(ND_FOR, stmt(), final_node);
+            
             node = new_node(ND_FOR, condition_node, node);
             node = new_node(ND_FOR, initialize_node, node);
 
@@ -161,6 +184,15 @@ Node *stmt() {
     }
 
     return node;
+}
+
+Node *block() {
+    Node *node = stmt();
+    if (check("}")){
+        consume("}");
+        return node;
+    }
+    return new_node(ND_BLOCK, node, block());
 }
 
 

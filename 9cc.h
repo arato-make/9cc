@@ -30,6 +30,7 @@ typedef enum {
     ND_ELSE,
     ND_WHILE,
     ND_FOR,
+    ND_BLOCK,
 } NodeKind;
 
 typedef struct Token Token;
@@ -74,6 +75,7 @@ Token *tokenize();
 LVar *find_lvar(Token *tok);
 Node *program();
 Node *stmt();
+Node *block();
 Node *expr();
 Node *assign();
 Node *equality();

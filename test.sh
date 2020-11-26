@@ -62,4 +62,10 @@ assert 5 'a=0;while(a < 5) a=a+1; return a;'
 assert 8 'while(a < 8) a=a+1; return a;'
 assert 5 'a=0;for(b=0;b<5;b=b+1) a=a+1; return a;'
 assert 16 'a=0;for(b=0;b!=8;b=b+1) a=a+2; return a;'
+assert 8 'while(a < 8){a=a+1;} return a;'
+assert 4 'test=0;a=0;while(a < 8) {a=a+2;test=test+1;} return test;'
+assert 5 'if(1==1) {a=2;a=a+3;} else 2*5;'
+assert 10 'if(1==2) 2+3; else {a=2;a=a*5;}'
+assert 4 'a=0;for(b=0;b!=8;b=b+1) {a=a+1;b=b+1;} return a;'
+
 echo OK
