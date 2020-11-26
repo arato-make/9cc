@@ -54,5 +54,12 @@ assert 13 'return 13;'
 assert 3 'foo=2*5;bar=3;return bar;foobar=foo+bar;'
 assert 13 'foo=2*5;bar=3;return foo+bar;'
 assert 23 'return 3+5*4;'
-
+assert 5 'if(1==1) return 5; return 10;'
+assert 10 'if(1==2) return 5; return 10;'
+assert 5 'if(1==1) 2+3;else 2*5;'
+assert 10 'if(1==2) 2+3;else 2*5;'
+assert 5 'a=0;while(a < 5) a=a+1; return a;'
+assert 8 'while(a < 8) a=a+1; return a;'
+assert 5 'a=0;for(b=0;b<5;b=b+1) a=a+1; return a;'
+assert 16 'a=0;for(b=0;b!=8;b=b+1) a=a+2; return a;'
 echo OK

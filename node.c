@@ -22,14 +22,6 @@ Node *new_node_ident(int offset) {
     return node;
 }
 
-Node *new_node_return() {
-    Node *node = calloc(1,sizeof(Node));
-    node->kind = ND_RETURN;
-    token = token->next;
-    node->lhs = expr();
-    return node;
-}
-
 bool consume(char *op) {
     if (token->kind != TK_RESERVED || 
         strlen(op) != token->len ||
@@ -105,7 +97,61 @@ Node *stmt() {
     Node *node;
 
     if (at_return()) {
-        node = new_node_return();
+        node = calloc(1,sizeof(Node));
+        node->kind = ND_RETURN;
+        token = token->next;
+        node->lhs = expr();
+    } else if (consume("if")) {
+        if (consume("(")) {
+            Node *condition_node = expr();
+            if (!consume(")"))
+                error_at(token->str, "')'ではないトークンです");
+            
+            node = stmt();
+
+            if (consume("else")) {
+                node = new_node(ND_ELSE, node, stmt());
+            }
+
+            node = new_node(ND_IF, condition_node, node);
+            return node;
+        } else {
+            error_at(token->str, "'('ではないトークンです");
+        }
+    } else if (consume("while")) {
+        if (consume("(")) {
+            node = expr();
+            if (!consume(")"))
+                error_at(token->str, "')'ではないトークンです");
+            
+            node = new_node(ND_WHILE, node, stmt());
+            return node;
+        } else {
+            error_at(token->str, "'('ではないトークンです");
+        }
+    } else if (consume("for")) {
+        if (consume("(")) {
+            Node *initialize_node = expr();
+
+            if (!consume(";")) 
+                error_at(token->str, "';'ではないトークンです");
+
+            Node *condition_node = expr();
+
+            if (!consume(";")) 
+                error_at(token->str, "';'ではないトークンです");
+
+            Node *final_node = expr();
+
+            if (!consume(")"))
+                error_at(token->str, "')'ではないトークンです");
+
+            node = new_node(ND_FOR, stmt(), final_node);
+            node = new_node(ND_FOR, condition_node, node);
+            node = new_node(ND_FOR, initialize_node, node);
+
+            return node;
+        }
     } else {
         node = expr();
     }
@@ -116,6 +162,7 @@ Node *stmt() {
 
     return node;
 }
+
 
 Node *expr() {
     return assign();

@@ -4,7 +4,6 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     Token *tok = calloc(1, sizeof(Token));
     tok->kind = kind;
     tok->str = str;
-    user_input = str;
     tok->len = len;
     cur->next = tok;
     return tok;
@@ -15,6 +14,26 @@ int is_alnum(char c) {
         ('A' <= c && c <= 'Z') ||
         ('0' <= c && c <= '9') ||
         (c == '_'));
+}
+
+char *reserve_word[] = {
+    "==",
+    "!=",
+    "<=",
+    ">=",
+    "if",
+    "else",
+    "while",
+    "for"
+};
+
+int get_reserved_len(char *p) {
+    for (int i = 0; i < 8; i++) {
+        if (memcmp(p, reserve_word[i], strlen(reserve_word[i])) == 0) {
+            return strlen(reserve_word[i]);
+        }
+    }
+    return 0;
 }
 
 Token *tokenize() {
@@ -29,12 +48,10 @@ Token *tokenize() {
             continue;
         }
 
-        if (memcmp(p, "==", 2) == 0 ||
-            memcmp(p, "!=", 2) == 0|| 
-            memcmp(p, "<=", 2) ==0 || 
-            memcmp(p, ">=", 2) == 0 ) {
-            cur = new_token(TK_RESERVED, cur, p, 2);
-            p += 2;
+        int len = get_reserved_len(p);
+        if (len != 0) {
+            cur = new_token(TK_RESERVED, cur, p, len);
+            p += len;
             continue;
         }
 

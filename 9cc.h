@@ -26,6 +26,10 @@ typedef enum {
     ND_ASSIGN,
     ND_LVAR,
     ND_RETURN,
+    ND_IF,
+    ND_ELSE,
+    ND_WHILE,
+    ND_FOR,
 } NodeKind;
 
 typedef struct Token Token;
