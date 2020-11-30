@@ -271,7 +271,19 @@ Node *primary() {
     }
 
     if (at_ident()) {
-        return new_node_ident(get_offset());
+        char *str = calloc(1, token->len);
+        int len = token->len;
+        strncpy(str, token->str, len);
+        int offset = get_offset();
+        if(consume("(")) {
+            Node *node = calloc(1,sizeof(Node));
+            node->kind = ND_FUNC;
+            node->str = calloc(1, len);
+            strcpy(node->str, str);
+            consume(")");
+            return node;
+        }
+        return new_node_ident(offset);
     }
 
     return new_node_num(expect_number());
