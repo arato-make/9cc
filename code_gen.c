@@ -1,6 +1,8 @@
 #include "9cc.h"
 
 int arg_count;
+FuncKind func_kind;
+
 char arg_reg[][4] = {
     "rdi",
     "rsi",
@@ -96,26 +98,39 @@ void gen(Node *node) {
         return;
     case ND_FUNC:
         arg_count = 0;
+        func_kind = FUNC_CALL;
         gen(node->rhs);
         printf("  call %s\n", node->str);
         printf("  push rax\n");
         return;
     case ND_ARG:
-        gen(node->lhs);
-        printf("  pop rax\n");
-        printf("  mov %s, rax\n", arg_reg[arg_count]);
-        arg_count++;
-        gen(node->rhs);
+        if (func_kind == FUNC_CALL) {
+            gen(node->lhs);
+            printf("  pop rax\n");
+            printf("  mov %s, rax\n", arg_reg[arg_count]);
+            arg_count++;
+            gen(node->rhs);
+        } else {
+            gen_lval(node->lhs);
+            printf("  pop rax\n");
+            printf("  mov [rax], %s\n", arg_reg[arg_count]);
+            printf("  push rdi\n");
+            arg_count++;
+            gen(node->rhs);
+        }
         return;
     case ND_NULL:
         return;
     case ND_DEFF:
+        arg_count = 0;
+        func_kind = FUNC_DEFF;
         printf("%s:\n", node->str);
 
         printf("  push rbp\n");
         printf("  mov rbp, rsp\n");
         printf("  sub rsp, 208\n");
 
+        gen(node->rhs);
         gen(node->lhs);
 
         printf("  pop rax\n");

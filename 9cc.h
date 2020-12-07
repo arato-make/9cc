@@ -37,6 +37,11 @@ typedef enum {
     ND_DEFF,
 } NodeKind;
 
+typedef enum {
+    FUNC_CALL,
+    FUNC_DEFF,
+} FuncKind;
+
 typedef struct Token Token;
 struct Token {
     TokenKind kind;
