@@ -97,13 +97,13 @@ LVar *find_lvar(Token *tok) {
             return var;
     return NULL;
 }
-
 Node *program() {
     int i = 0;
     locals = calloc(1, sizeof(LVar));
     locals->offset = 0;
-    while (!at_eof())
+    while (!at_eof()){
         code[i++] = stmt();
+    }
     code[i] = NULL;
 }
 
@@ -185,7 +185,7 @@ Node *stmt() {
         node = expr();
     }
 
-    if (!consume(";")) {
+    if (!consume(";") && node->kind != ND_DEFF) {
         error_at(token->str, "';'ではないトークンです");
     }
 
@@ -301,8 +301,14 @@ Node *primary() {
                 }
                 arg -> rhs = new_node_null();
                 consume(")");
+
             } else {
                 node->rhs = new_node_null();
+            }
+
+            if (consume("{")) {
+                node->kind = ND_DEFF;
+                node->lhs = block();
             }
             return node;
         }

@@ -98,6 +98,7 @@ void gen(Node *node) {
         arg_count = 0;
         gen(node->rhs);
         printf("  call %s\n", node->str);
+        printf("  push rax\n");
         return;
     case ND_ARG:
         gen(node->lhs);
@@ -107,6 +108,21 @@ void gen(Node *node) {
         gen(node->rhs);
         return;
     case ND_NULL:
+        return;
+    case ND_DEFF:
+        printf("%s:\n", node->str);
+
+        printf("  push rbp\n");
+        printf("  mov rbp, rsp\n");
+        printf("  sub rsp, 208\n");
+
+        gen(node->lhs);
+
+        printf("  pop rax\n");
+    
+        printf("  mov rsp, rbp\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
         return;
     }
 
