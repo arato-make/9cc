@@ -22,6 +22,12 @@ Node *new_node_ident(int offset) {
     return node;
 }
 
+Node *new_node_null() {
+    Node *node = calloc(1,sizeof(Node));
+    node->kind = ND_NULL;
+    return node;
+}
+
 bool consume(char *op) {
     if (token->kind != TK_RESERVED || 
         strlen(op) != token->len ||
@@ -280,7 +286,24 @@ Node *primary() {
             node->kind = ND_FUNC;
             node->str = calloc(1, len);
             strcpy(node->str, str);
-            consume(")");
+
+            if(!consume(")")){
+                Node *arg = calloc(1,sizeof(Node));
+                arg->kind = ND_ARG;
+                arg->lhs = expr();
+                node->rhs = arg;
+                while (consume(",")) {
+                    Node *arg_tmp = calloc(1,sizeof(Node));
+                    arg_tmp->kind = ND_ARG;
+                    arg_tmp->lhs = expr();
+                    arg -> rhs = arg_tmp;
+                    arg = arg_tmp;
+                }
+                arg -> rhs = new_node_null();
+                consume(")");
+            } else {
+                node->rhs = new_node_null();
+            }
             return node;
         }
         return new_node_ident(offset);

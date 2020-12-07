@@ -1,5 +1,15 @@
 #include "9cc.h"
 
+int arg_count;
+char arg_reg[][4] = {
+    "rdi",
+    "rsi",
+    "rdx",
+    "rcx",
+    "r8",
+    "r9",
+};
+
 void gen_lval(Node *node) {
     if (node->kind != ND_LVAR)
         error("代入の左辺値が変数ではありません");
@@ -85,7 +95,18 @@ void gen(Node *node) {
         gen(node->rhs);
         return;
     case ND_FUNC:
+        arg_count = 0;
+        gen(node->rhs);
         printf("  call %s\n", node->str);
+        return;
+    case ND_ARG:
+        gen(node->lhs);
+        printf("  pop rax\n");
+        printf("  mov %s, rax\n", arg_reg[arg_count]);
+        arg_count++;
+        gen(node->rhs);
+        return;
+    case ND_NULL:
         return;
     }
 

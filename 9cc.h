@@ -32,6 +32,8 @@ typedef enum {
     ND_FOR,
     ND_BLOCK,
     ND_FUNC,
+    ND_ARG,
+    ND_NULL,
 } NodeKind;
 
 typedef struct Token Token;
