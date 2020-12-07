@@ -69,5 +69,7 @@ assert 10 'main(){ if(1==2) 2+3; else {a=2;a=a*5;} }'
 assert 4 'main(){ a=0;for(b=0;b!=8;b=b+1) {a=a+1;b=b+1;} return a; }'
 assert 12 'test(){return 3;} main(){ a=0;while(a < 12) a=a+test(); return a; }'
 assert 8 'test(a, b){return a*b;} main(){ test(2,4); }'
+assert 3 'main(){x=3;y=&x;return *y;}'
+assert 3 'main(){x=3;y=5;z=&y+8;return *z;}'
 
 echo OK
