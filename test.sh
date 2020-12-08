@@ -71,5 +71,6 @@ assert 12 'int test(){return 3;} int main(){ int a=0;while(a < 12) a=a+test(); r
 assert 8 'int test(int a, int b){return a*b;} int main(){ test(2,4); }'
 assert 3 'int main(){int x=3;int y=&x;return *y;}'
 assert 3 'int main(){int x=3;int y=5;int z=&y+8;return *z;}'
+assert 3 'int main(){int x;int y=&x;*y=3;return x;}'
 
 echo OK
