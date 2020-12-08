@@ -24,11 +24,12 @@ char *reserve_word[] = {
     "if",
     "else",
     "while",
-    "for"
+    "for",
+    "int",
 };
 
 int get_reserved_len(char *p) {
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 9; i++) {
         if (memcmp(p, reserve_word[i], strlen(reserve_word[i])) == 0) {
             return strlen(reserve_word[i]);
         }

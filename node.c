@@ -67,6 +67,25 @@ int get_offset() {
     if (lvar) {
         offset = lvar->offset;
     } else {
+        error_at(token->str, "変数が未定義です");
+        lvar = calloc(1, sizeof(LVar));
+        lvar->next = locals;
+        lvar->name = token->str;
+        lvar->len = token->len;
+        lvar->offset = locals->offset + 8;
+        offset = lvar->offset;
+        locals = lvar;
+    }
+    token = token->next;
+    return offset;
+}
+
+int set_offset() {
+    LVar *lvar = find_lvar(token);
+    int offset;
+    if (lvar) {
+        error_at(token->str, "既に定義済みの変数です");
+    } else {
         lvar = calloc(1, sizeof(LVar));
         lvar->next = locals;
         lvar->name = token->str;
@@ -97,6 +116,7 @@ LVar *find_lvar(Token *tok) {
             return var;
     return NULL;
 }
+
 Node *program() {
     int i = 0;
     locals = calloc(1, sizeof(LVar));
@@ -276,11 +296,22 @@ Node *primary() {
         return node;
     }
 
+    bool def_flag = false;
+
+    if (consume("int")) {
+        def_flag = true;
+    }
+
     if (at_ident()) {
         char *str = calloc(1, token->len);
         int len = token->len;
         strncpy(str, token->str, len);
-        int offset = get_offset();
+        int offset;
+        if (def_flag) {
+            offset = set_offset();
+        } else {
+            offset = get_offset();
+        }
         if(consume("(")) {
             Node *node = calloc(1,sizeof(Node));
             node->kind = ND_FUNC;
